@@ -1,31 +1,31 @@
-import React from 'react';
-import { Table, Button, Space } from 'antd';
+import React from "react";
+import { Table, Button, Space } from "antd";
 
 const UserManagement = () => {
   const columns = [
     {
-      title: 'Tên khách hàng',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Customer Name",
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
     },
     {
-      title: 'Số điện thoại',
-      dataIndex: 'phone',
-      key: 'phone',
+      title: "Phone Number",
+      dataIndex: "phone",
+      key: "phone",
     },
     {
-      title: 'Thao tác',
-      key: 'action',
+      title: "Actions",
+      key: "action",
       render: (text, record) => (
         <Space size="middle">
-          <Button type="primary">Xem chi tiết</Button>
-          <Button type="default">Chỉnh sửa</Button>
-          <Button type="danger">Xóa</Button>
+          <Button type="primary">View Details</Button>
+          <Button type="default">Edit</Button>
+          <Button type="danger">Delete</Button>
         </Space>
       ),
     },
@@ -33,23 +33,23 @@ const UserManagement = () => {
 
   const data = [
     {
-      key: '1',
-      name: 'Nguyễn Văn A',
-      email: 'a@example.com',
-      phone: '0909123456',
+      key: "1",
+      name: "Nguyen Van A",
+      email: "a@example.com",
+      phone: "0909123456",
     },
     {
-      key: '2',
-      name: 'Trần Văn B',
-      email: 'b@example.com',
-      phone: '0909876543',
+      key: "2",
+      name: "Tran Van B",
+      email: "b@example.com",
+      phone: "0909876543",
     },
-    // Thêm dữ liệu khách hàng tại đây
+    // Add more customer data here
   ];
 
   return (
     <div>
-      <h2>Quản lý khách hàng</h2>
+      <h2>User Management</h2>
       <Table columns={columns} dataSource={data} />
     </div>
   );

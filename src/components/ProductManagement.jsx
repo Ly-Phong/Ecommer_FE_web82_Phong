@@ -1,67 +1,88 @@
-import React from 'react';
-import { Table, Button, Space } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { Table, Button, Space } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const ProductManagement = () => {
   const navigate = useNavigate();
 
+  // Column configuration for the product table
   const columns = [
     {
-      title: 'Tên sản phẩm',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Product Name",
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: 'Giá',
-      dataIndex: 'price',
-      key: 'price',
-      render: (text) => `${text} VND`,
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+      render: (text) => `${text.toLocaleString()} VND`, // Format price with thousand separators
     },
     {
-      title: 'Số lượng tồn',
-      dataIndex: 'quantity',
-      key: 'quantity',
+      title: "Stock Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
     },
     {
-      title: 'Thao tác',
-      key: 'action',
+      title: "Actions",
+      key: "action",
       render: (text, record) => (
         <Space size="middle">
-          <Button type="primary">Chỉnh sửa</Button>
-          <Button type="danger">Xóa</Button>
+          <Button type="primary" onClick={() => handleEdit(record)}>
+            Edit
+          </Button>
+          <Button type="danger" onClick={() => handleDelete(record.key)}>
+            Delete
+          </Button>
         </Space>
       ),
     },
   ];
 
+  // Sample data for the product table
   const data = [
     {
-      key: '1',
-      name: 'Sản phẩm 1',
+      key: "1",
+      name: "Product 1",
       price: 120000,
       quantity: 50,
     },
     {
-      key: '2',
-      name: 'Sản phẩm 2',
+      key: "2",
+      name: "Product 2",
       price: 250000,
       quantity: 30,
     },
-    // Thêm dữ liệu sản phẩm tại đây
+    // Add more product data here
   ];
 
-  // Hàm điều hướng đến trang thêm sản phẩm
+  // Function to navigate to the Add Product page
   const goToAddProductPage = () => {
-    navigate('/admin/products/add'); // Đường dẫn đến trang thêm sản phẩm
+    navigate("/admin/products/add");
+  };
+
+  // Function to handle product edit
+  const handleEdit = (record) => {
+    navigate(`/admin/products/edit/${record.key}`); // Navigate to edit page with product ID
+  };
+
+  // Function to handle product deletion
+  const handleDelete = (key) => {
+    console.log("Delete product with key:", key);
+    // Implement product deletion logic here
   };
 
   return (
     <div>
-      <h2>Quản lý sản phẩm</h2>
-      <Button type="primary" style={{ marginBottom: 16 }} onClick={goToAddProductPage}>
-        Thêm sản phẩm mới
+      <h2>Product Management</h2>
+      <Button
+        type="primary"
+        style={{ marginBottom: 16 }}
+        onClick={goToAddProductPage}
+      >
+        Add New Product
       </Button>
-      <Table columns={columns} dataSource={data} />
+      <Table columns={columns} dataSource={data} pagination={{ pageSize: 5 }} />
     </div>
   );
 };

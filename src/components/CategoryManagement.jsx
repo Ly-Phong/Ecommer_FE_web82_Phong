@@ -67,12 +67,12 @@ const CategoryManagement = () => {
 
   const columns = [
     {
-      title: "Tên danh mục",
+      title: "Category Name",
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Hành động",
+      title: "Actions",
       key: "action",
       render: (text, record) => (
         <span>
@@ -80,10 +80,10 @@ const CategoryManagement = () => {
             onClick={() => handleEditCategory(record)}
             style={{ marginRight: 8 }}
           >
-            Chỉnh sửa
+            Edit
           </Button>
           <Button danger onClick={() => handleDeleteCategory(record._id)}>
-            Xóa
+            Delete
           </Button>
         </span>
       ),
@@ -97,11 +97,11 @@ const CategoryManagement = () => {
         onClick={handleAddCategory}
         style={{ marginBottom: 16 }}
       >
-        Thêm danh mục
+        Add Category
       </Button>
       <Table columns={columns} dataSource={categories} rowKey="_id" />
       <Modal
-        title={editingCategory ? "Chỉnh sửa danh mục" : "Thêm danh mục"}
+        title={editingCategory ? "Edit Category" : "Add Category"}
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -109,8 +109,10 @@ const CategoryManagement = () => {
         <Form form={form} layout="vertical">
           <Form.Item
             name="name"
-            label="Tên danh mục"
-            rules={[{ required: true, message: "Vui lòng nhập tên danh mục!" }]}
+            label="Category Name"
+            rules={[
+              { required: true, message: "Please enter a category name!" },
+            ]}
           >
             <Input />
           </Form.Item>

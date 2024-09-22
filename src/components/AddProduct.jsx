@@ -12,7 +12,7 @@ import {
 } from "antd";
 import { useNavigate } from "react-router-dom";
 
-const { TextArea } = Input; // Đảm bảo khai báo chính xác
+const { TextArea } = Input; // Ensure correct declaration
 
 const normFile = (e) => {
   if (Array.isArray(e)) {
@@ -23,11 +23,11 @@ const normFile = (e) => {
 
 const AddProductForm = () => {
   const [componentDisabled, setComponentDisabled] = useState(false);
-  const navigate = useNavigate(); // Hook điều hướng
+  const navigate = useNavigate(); // Navigation hook
 
-  // Hàm điều hướng về trang ProductManagement
+  // Function to navigate back to the ProductManagement page
   const handleGoBack = () => {
-    navigate("/admin/products"); // Đường dẫn đến trang ProductManagement
+    navigate("/admin/products"); // Path to the ProductManagement page
   };
 
   return (
@@ -46,51 +46,55 @@ const AddProductForm = () => {
         }}
       >
         <Form.Item
-          label="Tên sản phẩm"
+          label="Product Name"
           name="productName"
-          rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm" }]}
+          rules={[{ required: true, message: "Please enter the product name" }]}
         >
-          <Input placeholder="Nhập tên sản phẩm" />
+          <Input placeholder="Enter product name" />
         </Form.Item>
 
         <Form.Item
-          label="Giá sản phẩm"
+          label="Product Price"
           name="price"
-          rules={[{ required: true, message: "Vui lòng nhập giá sản phẩm" }]}
+          rules={[
+            { required: true, message: "Please enter the product price" },
+          ]}
         >
           <InputNumber
-            placeholder="Nhập giá"
+            placeholder="Enter price"
             min={0}
             style={{ width: "100%" }}
           />
         </Form.Item>
 
         <Form.Item
-          label="Loại sản phẩm"
+          label="Product Category"
           name="category"
-          rules={[{ required: true, message: "Vui lòng chọn loại sản phẩm" }]}
+          rules={[
+            { required: true, message: "Please select a product category" },
+          ]}
         >
-          <Select placeholder="Chọn loại sản phẩm">
-            <Select.Option value="electronics">Điện tử</Select.Option>
-            <Select.Option value="fashion">Thời trang</Select.Option>
-            <Select.Option value="home">Đồ gia dụng</Select.Option>
+          <Select placeholder="Select product category">
+            <Select.Option value="electronics">Electronics</Select.Option>
+            <Select.Option value="fashion">Fashion</Select.Option>
+            <Select.Option value="home">Home Appliances</Select.Option>
           </Select>
         </Form.Item>
 
-        <Form.Item label="Ngày phát hành" name="releaseDate">
+        <Form.Item label="Release Date" name="releaseDate">
           <DatePicker style={{ width: "100%" }} />
         </Form.Item>
 
-        <Form.Item label="Mô tả sản phẩm" name="description">
-          <TextArea rows={4} placeholder="Nhập mô tả sản phẩm" />
+        <Form.Item label="Product Description" name="description">
+          <TextArea rows={4} placeholder="Enter product description" />
         </Form.Item>
 
         <Form.Item
-          label="Hình ảnh"
+          label="Image"
           name="image"
           valuePropName="fileList"
           getValueFromEvent={normFile}
-          rules={[{ required: true, message: "Vui lòng tải lên hình ảnh" }]}
+          rules={[{ required: true, message: "Please upload an image" }]}
         >
           <Upload action="/upload.do" listType="picture-card">
             <div>
@@ -100,13 +104,17 @@ const AddProductForm = () => {
           </Upload>
         </Form.Item>
 
-        <Form.Item label="Đăng bán" name="status" valuePropName="checked">
+        <Form.Item
+          label="Available for Sale"
+          name="status"
+          valuePropName="checked"
+        >
           <Switch />
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 4, span: 14 }}>
           <Button type="primary" htmlType="submit">
-            Thêm sản phẩm
+            Add Product
           </Button>
         </Form.Item>
       </Form>
@@ -114,9 +122,9 @@ const AddProductForm = () => {
         type="default"
         icon={<ArrowLeftOutlined />}
         onClick={handleGoBack}
-        style={{ marginBottom: 16, width: '100px' }}
+        style={{ marginBottom: 16, width: "100px" }}
       >
-        Quay lại
+        Go Back
       </Button>
     </>
   );
