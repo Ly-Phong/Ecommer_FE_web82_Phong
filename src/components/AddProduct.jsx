@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { getAllCategory } from "../apis/category";
 import { registProduct } from "../apis/product";
 
-const { TextArea } = Input; // Đảm bảo khai báo chính xác
+const { TextArea } = Input; // Ensure correct declaration
 
 const normFile = (e) => {
   if (Array.isArray(e)) {
@@ -53,9 +53,8 @@ const AddProductForm = () => {
       console.log(error);
     })
   }, [])
-
   const handleGoBack = () => {
-    navigate("/admin/products"); // Đường dẫn đến trang ProductManagement
+    navigate("/admin/products"); // Path to the ProductManagement page
   };
 
   return (
@@ -76,30 +75,32 @@ const AddProductForm = () => {
         onFinish={onFinish}
       >
         <Form.Item
-          label="Tên sản phẩm"
+          label="Product Name"
           name="productName"
-          rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm" }]}
+          rules={[{ required: true, message: "Please enter the product name" }]}
         >
-          <Input placeholder="Nhập tên sản phẩm" />
+          <Input placeholder="Enter product name" />
         </Form.Item>
 
         <Form.Item
-          label="Giá sản phẩm"
+          label="Product Price"
           name="price"
-          rules={[{ required: true, message: "Vui lòng nhập giá sản phẩm" }]}
+          rules={[
+            { required: true, message: "Please enter the product price" },
+          ]}
         >
           <InputNumber
-            placeholder="Nhập giá"
+            placeholder="Enter price"
             min={0}
             style={{ width: "100%" }}
           />
         </Form.Item>
 
         <Form.Item
-          label="Loại sản phẩm"
+          label="Product Category"
           name="category"
-          rules={[{ required: true, message: "Vui lòng chọn loại sản phẩm" }]}>
-          <Select placeholder="Chọn loại sản phẩm">
+          rules={[{ required: true, message: "Please choose at one category" }]}>
+          <Select placeholder="">
             {
               categoryList.map((category) =>{
                 return <Select.Option value={category._id}>{category.name}</Select.Option>
@@ -114,22 +115,22 @@ const AddProductForm = () => {
           rules={[{ required: true, message: "Please input product quantity" }]}
         >
           <InputNumber
-            placeholder="Nhập giá"
+            placeholder="Product quantity"
             min={0}
             style={{ width: "100%" }}
           />
         </Form.Item>
 
-        <Form.Item label="Mô tả sản phẩm" name="description">
-          <TextArea rows={4} placeholder="Nhập mô tả sản phẩm" />
+        <Form.Item label="Product Description" name="description">
+          <TextArea rows={4} placeholder="Enter product description" />
         </Form.Item>
 
         <Form.Item
-          label="Hình ảnh"
+          label="Image"
           name="image"
           valuePropName="fileList"
           getValueFromEvent={normFile}
-          rules={[{ required: true, message: "Vui lòng tải lên hình ảnh" }]}
+          rules={[{ required: true, message: "Please upload an image" }]}
         >
           <Upload multiple={false} listType="picture-card" onChange={(e) => { setFileList(e.fileList[0])}}>
             <div>
@@ -139,16 +140,17 @@ const AddProductForm = () => {
           </Upload>
         </Form.Item>
 
-        <Form.Item label="Đăng bán" name="status" valuePropName="checked">
+        <Form.Item
+          label="Available for Sale"
+          name="status"
+          valuePropName="checked"
+        >
           <Switch />
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 4, span: 14 }}>
-          <Button 
-          type="primary" 
-          htmlType="submit" 
-            >
-            Thêm sản phẩm
+          <Button type="primary" htmlType="submit">
+            Add Product
           </Button>
         </Form.Item>
       </Form>
@@ -156,9 +158,9 @@ const AddProductForm = () => {
         type="default"
         icon={<ArrowLeftOutlined />}
         onClick={handleGoBack}
-        style={{ marginBottom: 16, width: '100px' }}
+        style={{ marginBottom: 16, width: "100px" }}
       >
-        Quay lại
+        Go Back
       </Button>
     </>
   );
