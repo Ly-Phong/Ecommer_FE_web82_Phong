@@ -1,33 +1,57 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, Button, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
-
+import { getProductList } from '../apis/product';
+import constants from '../../constants';
 const ProductManagement = () => {
   const navigate = useNavigate();
-
+  const [products, setProducts] = useState([]);
+  const [totalItems, setTotalItems] = useState([]);
+  useEffect(() => {
+    getProductList(1,"", null, constants.CONST_PRODUCT_PER_PAGE).then((response) => {
+      if (response.status === 200) {
+        console.log(response.data.data.totalItems);
+        setProducts(response.data.data.items);
+        setTotalItems(response.data.data.totalItems);
+      }
+    }).catch((error) => {
+      console.log("System has error:" + error);
+    });
+  }, [])
   const columns = [
     {
-      title: 'Tên sản phẩm',
+      title: 'Name',
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: 'Giá',
+      title: 'Price',
       dataIndex: 'price',
       key: 'price',
       render: (text) => `${text} VND`,
     },
     {
-      title: 'Số lượng tồn',
+      title: 'Quantity',
       dataIndex: 'quantity',
       key: 'quantity',
+    },
+    {
+      title: 'Availble',
+      dataIndex: 'isAvailable',
+      key: 'isAvailable',
+    },
+    {
+      title: 'Category',
+      dataIndex: 'categoryId',
+      key: 'categoryId',
+      render: (categoryId) => categoryId === null ? "" : categoryId.name
     },
     {
       title: 'Thao tác',
       key: 'action',
       render: (text, record) => (
         <Space size="middle">
-          <Button type="primary">Chỉnh sửa</Button>
+          <Button onClick={console.log(text)} type="primary">Chỉnh sửa</Button>
           <Button type="danger">Xóa</Button>
         </Space>
       ),
@@ -61,7 +85,10 @@ const ProductManagement = () => {
       <Button type="primary" style={{ marginBottom: 16 }} onClick={goToAddProductPage}>
         Thêm sản phẩm mới
       </Button>
-      <Table columns={columns} dataSource={data} />
+      <Table columns={columns} dataSource={products} pagination={{
+          total: totalItems,
+          pageSize: constants.CONST_PRODUCT_PER_PAGE
+        }}/>
     </div>
   );
 };

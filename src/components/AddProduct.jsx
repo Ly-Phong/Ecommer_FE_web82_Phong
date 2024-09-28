@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PlusOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import {
   Button,
@@ -11,6 +11,8 @@ import {
   Switch,
 } from "antd";
 import { useNavigate } from "react-router-dom";
+import { getAllCategory } from "../apis/category";
+import { registProduct } from "../apis/product";
 
 const { TextArea } = Input; // Đảm bảo khai báo chính xác
 
@@ -21,11 +23,37 @@ const normFile = (e) => {
   return e?.fileList;
 };
 
+const onFinish = (values) => {
+  const {productName, price, category, image, quantity, description, status} = values;
+  let formData = new FormData();
+  formData.append("quantity", quantity);
+  formData.append("description", description);
+  formData.append("categoryId", category);
+  formData.append("name", productName);
+  formData.append("isAvailable", status);
+  formData.append("price", price);
+  formData.append("file", image[0].originFileObj);
+  registProduct(formData).then((response) => {
+    console.log(response)
+  });
+};
+
 const AddProductForm = () => {
   const [componentDisabled, setComponentDisabled] = useState(false);
+  const [categoryList, setCategoryList] = useState([]);
+  const [fileList, setFileList] = useState([]);
   const navigate = useNavigate(); // Hook điều hướng
+  const [form] = Form.useForm();
+  useEffect(() => {
+    getAllCategory().then((response) => {
+      if (response.status === 200) {
+        setCategoryList(response.data.data);
+      }
+    }).catch((error) =>{
+      console.log(error);
+    })
+  }, [])
 
-  // Hàm điều hướng về trang ProductManagement
   const handleGoBack = () => {
     navigate("/admin/products"); // Đường dẫn đến trang ProductManagement
   };
@@ -44,6 +72,8 @@ const AddProductForm = () => {
         style={{
           maxWidth: 800,
         }}
+        form={form}
+        onFinish={onFinish}
       >
         <Form.Item
           label="Tên sản phẩm"
@@ -68,17 +98,26 @@ const AddProductForm = () => {
         <Form.Item
           label="Loại sản phẩm"
           name="category"
-          rules={[{ required: true, message: "Vui lòng chọn loại sản phẩm" }]}
-        >
+          rules={[{ required: true, message: "Vui lòng chọn loại sản phẩm" }]}>
           <Select placeholder="Chọn loại sản phẩm">
-            <Select.Option value="electronics">Điện tử</Select.Option>
-            <Select.Option value="fashion">Thời trang</Select.Option>
-            <Select.Option value="home">Đồ gia dụng</Select.Option>
+            {
+              categoryList.map((category) =>{
+                return <Select.Option value={category._id}>{category.name}</Select.Option>
+              })
+            }
           </Select>
         </Form.Item>
 
-        <Form.Item label="Ngày phát hành" name="releaseDate">
-          <DatePicker style={{ width: "100%" }} />
+        <Form.Item
+          label="Quantity"
+          name="quantity"
+          rules={[{ required: true, message: "Please input product quantity" }]}
+        >
+          <InputNumber
+            placeholder="Nhập giá"
+            min={0}
+            style={{ width: "100%" }}
+          />
         </Form.Item>
 
         <Form.Item label="Mô tả sản phẩm" name="description">
@@ -92,7 +131,7 @@ const AddProductForm = () => {
           getValueFromEvent={normFile}
           rules={[{ required: true, message: "Vui lòng tải lên hình ảnh" }]}
         >
-          <Upload action="/upload.do" listType="picture-card">
+          <Upload multiple={false} listType="picture-card" onChange={(e) => { setFileList(e.fileList[0])}}>
             <div>
               <PlusOutlined />
               <div style={{ marginTop: 8 }}>Upload</div>
@@ -105,7 +144,10 @@ const AddProductForm = () => {
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 4, span: 14 }}>
-          <Button type="primary" htmlType="submit">
+          <Button 
+          type="primary" 
+          htmlType="submit" 
+            >
             Thêm sản phẩm
           </Button>
         </Form.Item>
