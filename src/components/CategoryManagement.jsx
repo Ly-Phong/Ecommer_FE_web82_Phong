@@ -1,9 +1,9 @@
 // src/components/CategoryManagement.js
 import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input } from "antd";
-import { getCategoryList } from "../apis/category";
-import { Spin } from 'antd';
-import { useNavigate, useSearchParams } from "react-router-dom"; 
+import { createCategory, deleteCategory, getCategoryList, updateCategory } from "../apis/category";
+import { Spin, Alert } from 'antd';
+import { redirect, useNavigate, useSearchParams } from "react-router-dom"; 
 import { Popconfirm } from 'antd';
 import constants from '../../constants';
 const CategoryManagement = () => {
@@ -15,17 +15,28 @@ const CategoryManagement = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [isFilter , setIsFilter] = useState(false);
+  const [isSuccess , setIsSuccess] = useState(searchParams.get("success") !== null 
+    ? searchParams.get("success") === 'true' 
+    ? true
+    : false 
+  : false);
+  const [action , setAction] = useState(searchParams.get("action"));
+  const [message , setMessage] = useState("");
+  const [messageModal , setMessageModal] = useState("");
+  const [totalPage , setTotalPage] = useState(0);
   const navigate = useNavigate();
   const pageNumber = Number.parseInt(searchParams.get("pn") !== null ? searchParams.get("pn") : 1);
   useEffect(() => {
     if(!isFilter) {
       setIsLoading(true);
+      setMessage("");
       getCategoryList(pageNumber, constants.CONST_CATEGORY_PER_PAGE).then((response) => {
         if (response.status === 200) {
           console.log(response);
           console.log(response.data.data.items);
           setCategories(response.data.data.items);
           setTotalItems(response.data.data.totalItems);
+          setTotalPage(response.data.data.totalPage)
         }
       }).catch((error) => {
         console.log(error);
@@ -58,8 +69,18 @@ const CategoryManagement = () => {
 
   const handleDeleteCategory = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/categories/${id}`);
-      fetchCategories();
+      let isSuccess = false;
+      deleteCategory(id).then((response) => {
+        setIsSuccess(true);
+        isSuccess = true;
+      }).catch((error) => {
+        setIsSuccess(false);
+        isSuccess = false;
+      }).finally(() => {
+        if(isSuccess) {
+            window.location.href =`/admin/categories?pn=${categories.length > 1 ? pageNumber : pageNumber > 1 ? pageNumber - 1 :pageNumber}&success=true&action=delete`;
+          }
+      });
     } catch (error) {
       console.error("Failed to delete category:", error);
     }
@@ -68,16 +89,41 @@ const CategoryManagement = () => {
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
+      const categoryName = values.name;
+      const categoryId = values._id;
+      console.log(values)
+      setIsLoading(true);
+      let isSuccess = false;
       if (editingCategory) {
-        await axios.put(
-          `http://localhost:5000/api/categories/${editingCategory._id}`,
-          values
-        );
+        updateCategory(categoryId, categoryName).then((response) => {
+          setMessageModal(response.data.message);
+          setIsSuccess(true);
+          isSuccess = true;
+        }).catch((error) => {
+          setMessageModal(error.response.data.message);
+          setIsSuccess(false);
+          isSuccess = false;
+        }).finally(() => {
+          setIsLoading(false);
+          if(isSuccess) {
+            window.location.href =`/admin/categories?pn=${categories.length > 1 ? pageNumber : pageNumber > 1 ? pageNumber - 1 :pageNumber}&success=true&action=delete`;
+          }
+          if (isSuccess) {console.log("redireact");  window.location.href = `/admin/categories?pn=${pageNumber}`;}
+        })
       } else {
-        await axios.post("http://localhost:5000/api/categories", values);
+        createCategory(categoryName).then((response) => {
+          setMessageModal(response.data.message);
+          setIsSuccess(true);
+          isSuccess = true;
+        }).catch((error) => {
+          setMessageModal(error.response.data.message);
+          setIsSuccess(false);
+          isSuccess = false;
+        }).finally(() => {
+          setIsLoading(false);
+          if (isSuccess)  { console.log("redireact"); window.location.href = `/admin/categories?pn=${pageNumber}`;}
+        })
       }
-      fetchCategories();
-      setIsModalVisible(false);
     } catch (error) {
       console.error("Failed to save category:", error);
     }
@@ -85,6 +131,12 @@ const CategoryManagement = () => {
 
   const handleCancel = () => {
     setIsModalVisible(false);
+    setMessageModal("");
+    if(editingCategory && isSuccess) {
+      window.href.location = `/admin/categories?pn=${pageNumber}`
+    } else if(!editingCategory && isSuccess) {
+      window.href.location = `/admin/categories?pn=${totalPage}`
+    }
   };
 
   const columns = [
@@ -104,9 +156,16 @@ const CategoryManagement = () => {
           >
             Edit
           </Button>
-          <Button danger onClick={() => handleDeleteCategory(record._id)}>
-            Delete
-          </Button>
+          <Popconfirm
+            title={`Delete user`}
+            description={`Are you sure to delete this user? `}
+            onConfirm={() => handleDeleteCategory(record._id)}
+            onCancel={() => {}}
+            okText="Yes"
+            cancelText="No">
+            <Button danger>Delete</Button>
+          </Popconfirm>
+
         </span>
       ),
     },
@@ -114,6 +173,14 @@ const CategoryManagement = () => {
 
   return (
     <div>
+      { 
+          action &&
+          <Alert
+            message={`Delete category ${isSuccess ? "success" : "fail"}`}
+            type= {isSuccess ? "success" : "error"}
+            onClose={() => {setMessage("")}}
+            closable />
+      }
       <Button
         type="primary"
         onClick={handleAddCategory}
@@ -138,7 +205,22 @@ const CategoryManagement = () => {
         onOk={handleOk}
         onCancel={handleCancel}
       >
+        { 
+          messageModal !== "" &&
+          <Alert
+            message={messageModal}
+            type= {isSuccess ? "success" : "error"}
+            onClose={() => {setMessageModal("")}}
+            closable />
+        }
         <Form form={form} layout="vertical">
+        <Form.Item
+            name="_id"
+            label="Category Id"
+            hidden={true}
+          >
+            <Input hidden={true}/>
+          </Form.Item>
           <Form.Item
             name="name"
             label="Category Name"
@@ -148,7 +230,7 @@ const CategoryManagement = () => {
           >
             <Input />
           </Form.Item>
-        </Form>
+      </Form>
       </Modal>
     </div>
   );

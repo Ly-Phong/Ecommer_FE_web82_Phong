@@ -17,8 +17,31 @@ function getCategoryList(pageNumber, pageSize)
     })
 }
 
+function createCategory(categoryName)
+{
+    return axiosClient.post(`${categoryEndpoint}`, {
+        name: categoryName
+    })
+}
+
+function updateCategory(categoryId, categoryName)
+{
+    return axiosClient.put(`${categoryEndpoint}`, {
+        _id:categoryId,
+        name: categoryName
+    })
+}
+
+function deleteCategory(categoryId)
+{
+    return axiosClient.delete(`${categoryEndpoint}/${categoryId}`);
+}
+
 
 export {
     getAllCategory,
-    getCategoryList
+    getCategoryList,
+    updateCategory,
+    createCategory,
+    deleteCategory
 }
