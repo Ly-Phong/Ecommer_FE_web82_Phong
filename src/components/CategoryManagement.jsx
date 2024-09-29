@@ -1,17 +1,39 @@
 // src/components/CategoryManagement.js
 import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input } from "antd";
-// import axios from "axios";
-
+import { getCategoryList } from "../apis/category";
+import { Spin } from 'antd';
+import { useNavigate, useSearchParams } from "react-router-dom"; 
+import { Popconfirm } from 'antd';
+import constants from '../../constants';
 const CategoryManagement = () => {
-  const [categories, setCategories] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [editingCategory, setEditingCategory] = useState(null);
-
+  const [categories, setCategories] = useState([]);
+  const [totalItems, setTotalItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [isFilter , setIsFilter] = useState(false);
+  const navigate = useNavigate();
+  const pageNumber = Number.parseInt(searchParams.get("pn") !== null ? searchParams.get("pn") : 1);
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    if(!isFilter) {
+      setIsLoading(true);
+      getCategoryList(pageNumber, constants.CONST_CATEGORY_PER_PAGE).then((response) => {
+        if (response.status === 200) {
+          console.log(response);
+          console.log(response.data.data.items);
+          setCategories(response.data.data.items);
+          setTotalItems(response.data.data.totalItems);
+        }
+      }).catch((error) => {
+        console.log(error);
+      }).finally(() =>{
+        setIsLoading(false);
+      });
+    }
+  }, [])
 
   const fetchCategories = async () => {
     try {
@@ -99,7 +121,17 @@ const CategoryManagement = () => {
       >
         Add Category
       </Button>
-      <Table columns={columns} dataSource={categories} rowKey="_id" />
+      <Table columns={columns} 
+      dataSource={categories} 
+      rowKey="_id"  
+      loading={isLoading && <Spin tip="Loading"></Spin>} 
+      pagination={{
+        current: pageNumber,
+        total: totalItems,
+        pageSize: constants.CONST_CATEGORY_PER_PAGE,
+        onChange: (pageNumber, pageSize) => {window.location.href=`/admin/categories?pn=${pageNumber}`}
+      }}
+      />
       <Modal
         title={editingCategory ? "Edit Category" : "Add Category"}
         visible={isModalVisible}

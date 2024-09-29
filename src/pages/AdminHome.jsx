@@ -10,6 +10,8 @@ import OrderManagement from "../components/OrderManagement";
 import InventoryManagement from "../components/InventoryManagement";
 import CategoryManagement from "../components/CategoryManagement";
 import AddProduct from "../components/AddProduct";
+import OrderDetail from "../components/OrderDetail";
+import UserDetail from "../components/UserDetail";
 
 const { Content, Sider } = Layout;
 
@@ -52,6 +54,9 @@ const AdminHome = () => {
             <Route path="inventory" element={<InventoryManagement />} />
             <Route path="categories" element={<CategoryManagement />} />
             <Route path="products/add" element={<AddProduct />} />
+            <Route path="products/edit" element={<AddProduct />} />
+            <Route path="orders/:orderId" element={<OrderDetail />} />
+            <Route path="users/:userId" element={<UserDetail />} />
           </Routes>
         </Content>
       </Layout>

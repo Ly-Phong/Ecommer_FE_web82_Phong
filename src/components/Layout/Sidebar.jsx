@@ -18,9 +18,6 @@ const Sidebar = () => {
         <Menu.Item key="orders">
           <Link to="/admin/orders">Order Management</Link>
         </Menu.Item>
-        <Menu.Item key="inventory">
-          <Link to="/admin/inventory">Inventory Management</Link>
-        </Menu.Item>
         <Menu.Item key="categories">
           <Link to="/admin/categories">Category Management</Link>
         </Menu.Item>
