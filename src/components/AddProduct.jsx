@@ -46,15 +46,18 @@ const AddProductForm = () => {
     formData.append("description", description);
     formData.append("categoryId", category);
     formData.append("name", productName);
-    formData.append("isAvailable", isAvailable);
+    formData.append("isAvailable", isAvailable === undefined ? false : isAvailable);
     formData.append("price", price);
     setIsLoading(true);
-    const isUpdateImg = (product.image !== undefined &&  image[0]?.url === product.image) === false;
-    if(isUpdate && isUpdateImg) {    
+    console.log(product?.image)
+    console.log(image[0]?.url)
+    const isUpdateImg = (product?.image !== undefined &&  image[0]?.url === product.image) === false;
+    if((isUpdate && isUpdateImg) || !isUpdate) {    
       formData.append("file", image[0].originFileObj);
     } else {
       formData.append("image", product.image);
     }
+    console.log(isUpdate)
     if(isUpdate) {
       updateProduct(formData, isUpdateImg, product._id).then((response) => {
         setIsSuccess(true);
@@ -71,8 +74,9 @@ const AddProductForm = () => {
         setMessage(response.data.message);
         setIsSuccess(true);
       }).catch((error) => {
-        console.log(error.data.message)
-        setMessage(error.data.message);
+        console.log(error)
+        console.log(error.response.data.message)
+        setMessage(error.response.data.message);
         setIsSuccess(false);
       }).finally(() => {
         setIsLoading(false);
@@ -85,7 +89,7 @@ const AddProductForm = () => {
         setCategoryList(response.data.data);
       }
     }).catch((error) =>{
-      console.log(response.data.message);
+      console.log(error.response.data.message);
     })
     if (isUpdate) {     
       setIsLoading(true);

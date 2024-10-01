@@ -71,9 +71,12 @@ const CategoryManagement = () => {
     try {
       let isSuccess = false;
       deleteCategory(id).then((response) => {
+        console.log(response)
         setIsSuccess(true);
         isSuccess = true;
       }).catch((error) => {
+        console.log(error.response.data.message)
+        setMessage(error.response.data.message);
         setIsSuccess(false);
         isSuccess = false;
       }).finally(() => {
@@ -108,7 +111,7 @@ const CategoryManagement = () => {
           if(isSuccess) {
             window.location.href =`/admin/categories?pn=${categories.length > 1 ? pageNumber : pageNumber > 1 ? pageNumber - 1 :pageNumber}&success=true&action=delete`;
           }
-          if (isSuccess) {console.log("redireact");  window.location.href = `/admin/categories?pn=${pageNumber}`;}
+          if (isSuccess) {console.log("redirect");  window.location.href = `/admin/categories?pn=${pageNumber}`;}
         })
       } else {
         createCategory(categoryName).then((response) => {
@@ -121,7 +124,7 @@ const CategoryManagement = () => {
           isSuccess = false;
         }).finally(() => {
           setIsLoading(false);
-          if (isSuccess)  { console.log("redireact"); window.location.href = `/admin/categories?pn=${pageNumber}`;}
+          if (isSuccess)  { console.log("redirects"); window.location.href = `/admin/categories?pn=${pageNumber}`;}
         })
       }
     } catch (error) {
@@ -174,9 +177,9 @@ const CategoryManagement = () => {
   return (
     <div>
       { 
-          action &&
+          message !== "" &&
           <Alert
-            message={`Delete category ${isSuccess ? "success" : "fail"}`}
+            message={message}
             type= {isSuccess ? "success" : "error"}
             onClose={() => {setMessage("")}}
             closable />
